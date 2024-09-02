@@ -1,55 +1,62 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import './LogDisplay.css'
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import './LogDisplay.css';
 
 const LogDisplay = () => {
-  const [logs, setLogs] = useState([])
-  const [year, setYear] = useState('')
-  const [month, setMonth] = useState('')
-  const [day, setDay] = useState('')
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const [logs, setLogs] = useState([]);
+  const [date, setDate] = useState('');
+  const [event, setEvent] = useState('');
+  const [recipient, setRecipient] = useState('');
+  const [sender, setSender] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [eventOptions, setEventOptions] = useState([]);
 
-  useEffect(() => {
-    fetchLogs()
-  }, [year, month, day, page])
-
-  const fetchLogs = async () => {
+  // Fetch logs when filters or page change
+  const fetchLogs = useCallback(async () => {
     try {
+      const [day, month, year] = date.split('/');
       const response = await axios.get('http://127.0.0.1:8000/get-logs/', {
         params: {
           year: year || null,
           month: month || null,
           day: day || null,
+          event: event || null,
+          recipient: recipient || null,
+          sender: sender || null,
           page: page,
         },
-      })
+      });
 
-      if (response.data && response.data.logs) {
-        setLogs(response.data.logs)
-        setTotalPages(response.data.total_pages || 1)
-      } else {
-        setLogs([])
-        setTotalPages(1)
-      }
+      setLogs(response.data.logs || []);
+      setTotalPages(response.data.total_pages || 1);
     } catch (error) {
-      console.error('Error fetching logs:', error)
-      setLogs([])
-      setTotalPages(1)
+      console.error('Error fetching logs:', error);
+      setLogs([]);
+      setTotalPages(1);
     }
-  }
+  }, [date, event, recipient, sender, page]);
 
-  const handleNextPage = () => {
-    if (page < totalPages) {
-      setPage(page + 1)
+  // Fetch event options once on component mount
+  const fetchEventOptions = useCallback(async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/get-events/');
+      setEventOptions(response.data.events || []);
+    } catch (error) {
+      console.error('Error fetching event options:', error);
     }
-  }
+  }, []);
 
-  const handlePreviousPage = () => {
-    if (page > 1) {
-      setPage(page - 1)
-    }
-  }
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
+
+  useEffect(() => {
+    fetchEventOptions();
+  }, [fetchEventOptions]);
+
+  const handleNextPage = () => setPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  const handlePreviousPage = () => setPage((prevPage) => Math.max(prevPage - 1, 1));
 
   return (
     <div className="container">
@@ -58,24 +65,29 @@ const LogDisplay = () => {
         <span style={{ marginRight: '10px' }}>Filter:</span>
         <input
           type="text"
-          placeholder="Year"
-          maxLength="2"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
+          placeholder="day/month/year"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+        <select value={event} onChange={(e) => setEvent(e.target.value)}>
+          <option value="">Select Event</option>
+          {eventOptions.map((eventOption) => (
+            <option key={eventOption} value={eventOption}>
+              {eventOption}
+            </option>
+          ))}
+        </select>
+        <input
+          type="text"
+          placeholder="Recipient"
+          value={recipient}
+          onChange={(e) => setRecipient(e.target.value)}
         />
         <input
           type="text"
-          placeholder="Month"
-          maxLength="2"
-          value={month}
-          onChange={(e) => setMonth(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Day"
-          maxLength="2"
-          value={day}
-          onChange={(e) => setDay(e.target.value)}
+          placeholder="Sender"
+          value={sender}
+          onChange={(e) => setSender(e.target.value)}
         />
       </div>
 
@@ -136,7 +148,7 @@ const LogDisplay = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default LogDisplay;
