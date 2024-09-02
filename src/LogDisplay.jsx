@@ -12,7 +12,6 @@ const LogDisplay = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [eventOptions, setEventOptions] = useState([]);
 
-  // Fetch logs when filters or page change
   const fetchLogs = useCallback(async () => {
     try {
       const [day, month, year] = date.split('/');
@@ -37,7 +36,6 @@ const LogDisplay = () => {
     }
   }, [date, event, recipient, sender, page]);
 
-  // Fetch event options once on component mount
   const fetchEventOptions = useCallback(async () => {
     try {
       const response = await axios.get('http://127.0.0.1:8000/get-events/');
@@ -65,9 +63,28 @@ const LogDisplay = () => {
         <span style={{ marginRight: '10px' }}>Filter:</span>
         <input
           type="text"
-          placeholder="day/month/year"
+          placeholder="dd/mm/yyyy"
           value={date}
-          onChange={(e) => setDate(e.target.value)}
+          onChange={(e) => {
+            const valor = e.target.value;
+            const regex = /^\d{0,2}$/;
+            const regex2 = /^\d{0,2}\/\d{0,2}$/;
+            const regex3 = /^\d{0,2}\/\d{0,2}\/\d{0,4}$/;
+
+            if (valor.length <= 2 && regex.test(valor)) {
+              setDate(valor);
+            } else if (valor.length <= 5 && regex2.test(valor)) {
+              setDate(valor);
+            } else if (valor.length <= 10 && regex3.test(valor)) {
+              setDate(valor);
+            }
+
+            if (valor.length === 2 && regex.test(valor)) {
+              setDate(valor + '/');
+            } else if (valor.length === 5 && regex2.test(valor)) {
+              setDate(valor + '/');
+            }
+          }}
         />
         <select value={event} onChange={(e) => setEvent(e.target.value)}>
           <option value="">Select Event</option>
