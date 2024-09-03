@@ -27,10 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-import pymysql
-
-pymysql.install_as_MySQLdb()
+CORS_ALLOWED_ALL_ORIGINS = True
 
 # Application definition
 
@@ -42,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'logs',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +50,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
 ]
 
 ROOT_URLCONF = 'mailgunlogs.urls'
@@ -74,7 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mailgunlogs.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -83,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mailgunlogs',
         'USER': 'root',
-        'PASSWORD': 'jona.2005',
+        'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '3306',
     }
