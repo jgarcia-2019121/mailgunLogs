@@ -60,16 +60,16 @@ const LogDisplay = () => {
     <div className="container">
       <h2 style={{ textAlign: 'center' }}>Tabla logs</h2>
       <div className="filter-container">
-        <span style={{ marginRight: '10px' }}>Filter:</span>
+        <span style={{ marginRight: '10px' }}>Filtros:</span>
         <input
           type="text"
-          placeholder="dd/mm/yyyy"
+          placeholder="dd/mm/yy"
           value={date}
           onChange={(e) => {
             const valor = e.target.value;
             const regex = /^\d{0,2}$/;
             const regex2 = /^\d{0,2}\/\d{0,2}$/;
-            const regex3 = /^\d{0,2}\/\d{0,2}\/\d{0,4}$/;
+            const regex3 = /^\d{0,2}\/\d{0,2}\/\d{0,2}$/;
 
             if (valor.length <= 2 && regex.test(valor)) {
               setDate(valor);
@@ -87,7 +87,7 @@ const LogDisplay = () => {
           }}
         />
         <select value={event} onChange={(e) => setEvent(e.target.value)}>
-          <option value="">Select Event</option>
+          <option value="">Seleccionar evento</option>
           {eventOptions.map((eventOption) => (
             <option key={eventOption} value={eventOption}>
               {eventOption}
@@ -96,13 +96,19 @@ const LogDisplay = () => {
         </select>
         <input
           type="text"
-          placeholder="Recipient"
+          placeholder="Enviado a"
           value={recipient}
           onChange={(e) => setRecipient(e.target.value)}
         />
         <input
           type="text"
-          placeholder="Sender"
+          placeholder="Enviado desde"
+          value={sender}
+          onChange={(e) => setSender(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Asunto"
           value={sender}
           onChange={(e) => setSender(e.target.value)}
         />
@@ -113,17 +119,17 @@ const LogDisplay = () => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Date</th>
-              <th>Event</th>
-              <th>Recipient</th>
+              <th>Fecha</th>
+              <th>Evento</th>
+              <th>Enviado a</th>
               <th>URL</th>
-              <th>Message</th>
+              <th>Mensaje</th>
             </tr>
           </thead>
           <tbody>
             {logs.length === 0 ? (
               <tr>
-                <td colSpan="6">No logs available</td>
+                <td colSpan="6">No hay datos en la tabla</td>
               </tr>
             ) : (
               logs.map((log) => (
@@ -151,17 +157,17 @@ const LogDisplay = () => {
           onClick={handlePreviousPage}
           disabled={page === 1}
         >
-          Previous
+          Anterior
         </button>
         <span className="pagination-info">
-          Page {page} of {totalPages}
+          No. Página {page} de {totalPages}
         </span>
         <button
           className="pagination-button"
           onClick={handleNextPage}
           disabled={page === totalPages}
         >
-          Next
+          Siguiente
         </button>
       </div>
     </div>
