@@ -30,7 +30,16 @@ h1 {
     margin-right: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 90px;
+    width: 95px;
+    font-size: 14px;
+}
+
+.filter-container select {
+    padding: 6px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 155px;
     font-size: 14px;
 }
 
