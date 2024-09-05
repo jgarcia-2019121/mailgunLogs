@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from .models import Log
+import json
 
 def get_logs(request):
     year = request.GET.get('year', None)
@@ -9,6 +10,7 @@ def get_logs(request):
     event = request.GET.get('event', None)
     recipient = request.GET.get('recipient', None)
     sender_mask = request.GET.get('sender_mask', None)
+    
     logs_list = Log.objects.all().order_by('-date')
 
     if year:
@@ -46,8 +48,36 @@ def get_logs(request):
     except ValueError:
         return JsonResponse({'error': 'Invalid page number'}, status=400)
 
+    logs_data = []
+    for log in page_obj.object_list:
+        subject = "N/A"
+        sender = "N/A"
+        message_data = log.message
+        if isinstance(message_data, dict):
+            headers = message_data.get('headers', '{}')
+        else:
+            headers = message_data
+
+        try:
+            headers_dict = json.loads(headers) 
+            subject = headers_dict.get('subject', 'N/A')
+            sender = headers_dict.get('from', 'N/A')
+        except (json.JSONDecodeError, TypeError):
+            print(f"Error parsing headers for Log ID: {log.id}")
+        print(f"Log ID: {log.id}, Subject: {subject}, From: {sender}")
+
+        logs_data.append({
+            'id': log.id,
+            'date': log.date,
+            'event': log.event,
+            'recipient': log.recipient,
+            'url': log.url,
+            'subject': subject,
+            'from': sender,
+        })
+
     data = {
-        'logs': list(page_obj.object_list.values('id', 'date', 'event', 'recipient', 'url', 'message')),
+        'logs': logs_data,
         'total_pages': paginator.num_pages
     }
 

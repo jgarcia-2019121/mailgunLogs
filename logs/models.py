@@ -1,11 +1,11 @@
 from django.db import models
 
 class Log(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.CharField(max_length=255, primary_key=True)
     date = models.DateTimeField()
     event = models.CharField(max_length=255)
     recipient = models.CharField(max_length=255)
-    url = models.URLField(max_length=200)
+    url = models.URLField(max_length=200, blank=True, null=True) 
     message = models.JSONField()
 
     class Meta:

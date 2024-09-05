@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,11 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-import pymysql
-
-pymysql.install_as_MySQLdb()
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'logs',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +50,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'mailgunlogs.urls'
@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mailgunlogs',
         'USER': 'root',
-        'PASSWORD': 'jona.2005',
+        'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '3306',
     }
